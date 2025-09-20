@@ -1,0 +1,63 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage:"
+    echo "  $0 run <deployment-name>    Runs a kestra deployment"
+    echo "  $0 help | --help            Show this help message"
+}
+
+start() {
+    local deployment="$1"
+    local deployments_dir="../deployments"
+    local target_dir="$deployments_dir/$deployment"
+    local init_script="$target_dir/run.sh"
+
+    if [[ -d "$target_dir" && -f "$init_script" ]]; then
+        bash "$init_script" start
+    else
+        echo "Error: Deployment '$deployment' not found or missing run.sh." >&2
+        exit 1
+    fi
+}
+
+stop() {
+    local deployment="$1"
+    local deployments_dir="../deployments"
+    local target_dir="$deployments_dir/$deployment"
+    local init_script="$target_dir/run.sh"
+
+    if [[ -d "$target_dir" && -f "$init_script" ]]; then
+        bash "$init_script" stop
+    else
+        echo "Error: Deployment '$deployment' not found or missing run.sh." >&2
+        exit 1
+    fi
+}
+
+
+case "$1" in
+    help|--help)
+        usage
+        ;;
+    start|run)
+        if [[ -z "$2" ]]; then
+            echo "Error: Missing deployment name." >&2
+            usage
+            exit 1
+        fi
+        start "$2"
+        ;;
+    stop)
+        if [[ -z "$2" ]]; then
+            echo "Error: Missing deployment name." >&2
+            usage
+            exit 1
+        fi
+        stop "$2"
+        ;;
+    *)
+        echo "Error: Unknown command '$1'." >&2
+        usage
+        exit 1
+        ;;
+esac
