@@ -1,4 +1,4 @@
-#/bin/bash
+#/bin/zsh
 # This script initializes ta kestra deployment running via docker-compose
 
 usage() {
@@ -37,8 +37,8 @@ KESTRA_EE_LICENSE_KEY="your_license_key_here"
 EOF
         exit 1
     fi
-    # run docker-compose to start the services
-    docker-compose up -d
+    # run docker compose to start the services
+    docker compose up -d
     # change back to the original directory
     cd "$CUR_DIR"
     echo "Kestra deployment initialized."
@@ -49,7 +49,7 @@ stop() {
     echo "Stopping Kestra deployment..."
     CUR_DIR="$(pwd)"
     cd "$(dirname "$0")"
-    docker-compose down
+    docker compose down
     # change back to the original directory
     cd "$CUR_DIR"
     echo "Kestra deployment stopped."
@@ -67,8 +67,9 @@ case "$1" in
         ;;
     restart)
         echo "Restarting Kestra deployment..."
-        docker-compose down
-        run
+        stop
+        sleep 1
+        start
         ;;
     *)
         echo "Error: Unknown command '$1'." >&2
