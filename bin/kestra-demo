@@ -1,5 +1,9 @@
 #!/bin/zsh
 
+if [[ -z "$KESTRA_DEMO_HOME" ]]; then
+    export KESTRA_DEMO_HOME="/home/warthog/work/kestra-demo"
+fi
+
 usage() {
     echo "Usage:"
     echo "  $0 run <deployment-name>    Runs a kestra deployment"
@@ -8,7 +12,7 @@ usage() {
 
 start() {
     local deployment="$1"
-    local deployments_dir="../deployments"
+    local deployments_dir="$KESTRA_DEMO_HOME/deployments"
     local target_dir="$deployments_dir/$deployment"
     local init_script="$target_dir/run.sh"
 
@@ -22,7 +26,7 @@ start() {
 
 stop() {
     local deployment="$1"
-    local deployments_dir="../deployments"
+    local deployments_dir="$KESTRA_DEMO_HOME/deployments"
     local target_dir="$deployments_dir/$deployment"
     local init_script="$target_dir/run.sh"
 
