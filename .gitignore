@@ -1,1 +1,5 @@
+.env
 deployments/dc-1/.env
+projects/no-plugins/option-2/local-plugins
+projects/no-plugins/option-2/kestra-wd
+projects/no-plugins/option-2/.env
