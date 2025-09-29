@@ -1,0 +1,16 @@
+id: penguin_938813
+namespace: company.team
+
+tasks:
+  - id: hello
+    type: io.kestra.plugin.core.log.Log
+    message: Hello World! 🚀
+    
+  - id: write_file
+    type: io.kestra.plugin.core.storage.Write
+    content: "Hello my name is {{ flow.id }} in the World of Kestra!"
+    extension: .txt
+
+  - id: log_file_uri
+    type: io.kestra.plugin.core.log.Log
+    message: "{{ outputs.write_file.uri }}"
