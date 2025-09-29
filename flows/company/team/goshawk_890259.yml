@@ -18,6 +18,6 @@ tasks:
     type: io.kestra.plugin.core.log.Log
     message: "{{ outputs.write_file.uri }}"
 
-  - id: hello
+  - id: hello_2_you
     type: io.kestra.plugin.core.log.Log
     message: Hello World! 🚀
