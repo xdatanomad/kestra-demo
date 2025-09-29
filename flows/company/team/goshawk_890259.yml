@@ -1,5 +1,5 @@
 id: goshawk_890259
-namespace: prod-company.team
+namespace: company.team
 
 tasks:
   - id: hello
@@ -17,3 +17,7 @@ tasks:
   - id: log_file_uri
     type: io.kestra.plugin.core.log.Log
     message: "{{ outputs.write_file.uri }}"
+
+  - id: hello
+    type: io.kestra.plugin.core.log.Log
+    message: Hello World! 🚀
