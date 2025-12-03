@@ -1,0 +1,17 @@
+---
+- name: Demo: Log-only playbook
+  hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: Log that the playbook started
+      debug:
+        msg: "Playbook started on host: {{ inventory_hostname }}"
+
+    - name: Simulate health check
+      debug:
+        msg: "Health check OK on {{ inventory_hostname }} (simulated)"
+
+    - name: Log finished
+      debug:
+        msg: "Playbook finished on host: {{ inventory_hostname }}"
