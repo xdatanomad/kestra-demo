@@ -6,7 +6,8 @@ volumes:
 
 services:
   postgres:
-    image: postgres
+    image: postgres:16.11-alpine3.22
+    pull: if_not_present
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
@@ -21,8 +22,8 @@ services:
 
   kestra:
     # image: kestra/kestra:latest
-    image: registry.kestra.io/docker/kestra-ee:v1.0
-    pull_policy: never
+    image: registry.kestra.io/docker/kestra-ee:latest
+    pull_policy: always
     # Note that this setup with a root user is intended for development purpose.
     # Our base image runs without root, but the Docker Compose implementation needs root to access the Docker socket
     user: "root"
@@ -66,7 +67,7 @@ services:
           ai:
             type: "gemini"
             gemini:
-              api-key: ${KESTRA_GEMINI_API_KEY}
+              api-key: "${KESTRA_GEMINI_API_KEY}"
               model-name: gemini-2.5-flash
           anonymousUsageReport:
             enabled: false
@@ -78,7 +79,7 @@ services:
               id: ${KESTRA_EE_LICENSE_ID}
               key: ${KESTRA_EE_LICENSE_KEY}
     ports:
-      - "18080:8080"
+      - "8085:8080"
       - "18081:8081"
     depends_on:
       postgres:

@@ -3,3 +3,14 @@ deployments/dc-1/.env
 projects/no-plugins/option-2/local-plugins
 projects/no-plugins/option-2/kestra-wd
 projects/no-plugins/option-2/.env
+kestra-wd/*
+kestra-wd/
+
+# hidden deployment
+deployments/dc-3/
+deployments/dc-2/
+deployments/dc-v0.22
+
+
+# backups
+backup-*.kestra
