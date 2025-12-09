@@ -48,10 +48,6 @@ services:
               secret: ${KESTRA_SECRET_JDBC_SECRET}
           encryption:
             secret-key: ${KESTRA_ENCRYPTION_SECRET_KEY}
-          server:
-            basicAuth:
-              username: ${KESTRA_BASIC_AUTH_USERNAME}
-              password: ${KESTRA_BASIC_AUTH_PASSWORD}
           repository:
             type: postgres
           storage:
@@ -75,10 +71,30 @@ services:
               fingerprint: ${KESTRA_EE_LICENSE_FINGERPRINT}
               id: ${KESTRA_EE_LICENSE_ID}
               key: ${KESTRA_EE_LICENSE_KEY}
-          url: http://localhost:8085/
+          
+          server:
+            basicAuth:
+              username: ${KESTRA_BASIC_AUTH_USERNAME}
+              password: ${KESTRA_BASIC_AUTH_PASSWORD}
+          
+          security:
+            super-admin:
+              username: ${KESTRA_BASIC_AUTH_USERNAME}
+              password: ${KESTRA_BASIC_AUTH_PASSWORD}
+              tenant-admin-access:
+                - main
+            default-role:
+              name: default
+              description: "Default role"
+              permissions:
+                FLOW: ["CREATE", "READ", "UPDATE"]
+                NAMESPACE: ["CREATE", "READ"]
+                EXECUTION: ["CREATE", "READ", "UPDATE"]
+                KVSTORE: ["READ"]
+                SECRET: ["READ"]
+              tenant-id: main
     ports:
       - "8085:8080"
-      - "18081:8081"
     depends_on:
       postgres:
         condition: service_started
