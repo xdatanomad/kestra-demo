@@ -14,3 +14,5 @@ deployments/dc-v0.22
 
 # backups
 backup-*.kestra
+
+.DS_Store
