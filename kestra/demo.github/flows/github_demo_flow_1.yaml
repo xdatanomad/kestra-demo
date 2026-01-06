@@ -1,0 +1,38 @@
+id: github_demo_flow_1
+namespace: demo.github
+
+tasks:
+  - id: hello
+    type: io.kestra.plugin.core.log.Log
+    message: Github integration demo flow! 🚀
+    
+  - id: my_working_dir
+    type: io.kestra.plugin.core.flow.WorkingDirectory
+    tasks:
+      - id: create_csv
+        type: io.kestra.plugin.core.storage.Write
+        content: |
+          first_name,last_name,email,signup_date
+          Ada,Lovelace,ada@example.com,1843-12-10
+          Grace,Hopper,grace@example.com,1906-12-09
+          Katherine,Johnson,kj@example.com,1918-08-26
+        extension: ".csv"
+
+      - id: shell_task
+        type: io.kestra.plugin.scripts.shell.Script
+        script: |
+          echo "Running a shell script in the working directory"
+          echo "Processing file: {{outputs.create_csv.uri}}"
+
+      - id: python_task
+        type: io.kestra.plugin.scripts.python.Commands
+        containerImage: python:3.13-slim
+        namespaceFiles:
+          enabled: true
+          include:
+            - pre-process/pre_process.py
+        dependencies:
+          - pandas
+          - click
+        commands:
+          - python pre-process/pre_process.py --input-file="{{outputs.create_csv.uri}}" --column-names="first_name,last_name,email"

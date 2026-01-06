@@ -1,0 +1,68 @@
+id: github_push_single_flow
+namespace: demo.github
+
+inputs:
+  - id: branch
+    type: STRING
+    defaults: "kestra"
+  - id: namespace
+    type: STRING
+    defaults: "demo.github"
+  - id: flow
+    type: STRING
+    defaults: "github_demo_flow_1"
+
+tasks:
+  - id: push_flows
+    type: io.kestra.plugin.git.PushFlows
+    sourceNamespace: "{{trigger.namespace ?? inputs.namespace}}"
+    # targetNamespace: prod
+    flows: 
+      - "{{trigger.flowId ?? inputs.flow}}"
+    includeChildNamespaces: true
+    gitDirectory: "examples/github_integration/_flows"
+    url: "https://github.com/xdatanomad/kestra-demo.git"
+    username: xdatanomad
+    password: "{{ secret('github_token') }}"
+    branch: "{{inputs.branch}}"
+    commitMessage: "kestra: committing flows {{trigger.flowId ?? inputs.flow}} {{ now() }}"
+    dryRun: false
+
+  - id: push_namespace_files
+    type: io.kestra.plugin.git.PushNamespaceFiles
+    namespace: "{{trigger.namespace ?? inputs.namespace}}"
+    files: "**"
+    gitDirectory: "examples/github_integration/_files"
+    url: "https://github.com/xdatanomad/kestra-demo.git"
+    username: xdatanomad
+    password: "{{ secret('github_token') }}"
+    branch: "{{inputs.branch}}"
+    commitMessage: "kestra: committing namespace files {{ now() }}"
+    dryRun: false
+
+triggers:
+  - id: on_15min_interval
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "*/15 * * * *"
+    disabled: true
+
+  - id: on_flow_executions
+    type: io.kestra.plugin.core.trigger.Flow
+    states: [CREATED, QUEUED, FAILED, SUCCESS, WARNING, PAUSED, CANCELLED]
+    disabled: false
+    preconditions:
+      id: flow_execution
+      where:
+        - id: namespace_filter
+          operand: AND
+          filters:
+            - field: NAMESPACE
+              type: EQUAL_TO
+              value: "demo.github"
+            - field: NAMESPACE
+              type: NOT_EQUAL_TO
+              value: "system"
+            - field: FLOW_ID
+              type: NOT_IN
+              values:
+                - "github_push_single_flow"

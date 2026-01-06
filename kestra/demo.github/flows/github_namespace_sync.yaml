@@ -1,0 +1,16 @@
+id: github_namespace_sync
+namespace: demo.github
+
+tasks:
+  - id: sync
+    type: io.kestra.plugin.git.NamespaceSync
+    namespace: "demo.github"
+    sourceOfTruth: KESTRA
+    whenMissingInSource: DELETE
+    protectedNamespaces:
+      - system
+    url: "https://github.com/xdatanomad/kestra-demo.git"
+    username: xdatanomad
+    password: "{{ secret('github_token') }}"
+    branch: demo
+    gitDirectory: kestra
