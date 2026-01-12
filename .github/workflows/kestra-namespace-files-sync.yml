@@ -1,9 +1,11 @@
-name: Sync Kestra Namespace Files
+name: sync_kestra_namespace_files
 
 on:
   push: 
+    # Triggers on commits to the kestra branch
     branches:
-      - kestra  # Triggers on commits to the kestra branch
+      - kestra  
+  # Uncomment the following lines to enable PR trigger
   # pull_request:
   #   types: [closed]  # This should be indented under pull_request
   #   branches:
@@ -11,12 +13,9 @@ on:
 
 jobs:
   trigger-kestra:
-    # If using PR trigger, ensure we only run on push or merged PRs
-    # if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
-    runs-on: ubuntu-latest
-    
+    runs-on: ubuntu-latest   
     steps: 
-      - name: Send Webhook to Kestra
+      - name: send_kestra_webhook
         run: |
           curl -X POST "https://partners.kestra.cloud/api/v1/demo/executions/webhook/system/github_sys_sync_namespacefiles/${{ secrets.KESTRA_WEBHOOK_KEY }}" \
           -H "Content-Type: application/json" \
