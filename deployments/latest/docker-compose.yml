@@ -41,6 +41,17 @@ services:
             driverClassName: org.postgresql.Driver
             username: ${POSTGRES_USER}
             password: ${POSTGRES_PASSWORD}
+        application:
+          micronaut:
+            security:
+              token:
+                generator:
+                  # UI session timeout
+                  # Set long expiration for development, consider shorter in production
+                  access-token:
+                    expiration: 36000
+                cookie:
+                  cookie-max-age: 10h
         kestra:
           secret:
             type: jdbc
