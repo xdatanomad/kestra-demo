@@ -1,0 +1,237 @@
+USER-SUPPLIED VALUES:
+# kubectl create secret docker-registry regcred --docker-server=registry.kestra.io --docker-username=$LICENSEID  --docker-password=$FINGERPRINT
+############ OSS ############
+# image:
+#   pullPolicy: IfNotPresent
+#   repository: kestra/kestra
+#   tag: v1.2
+############ EE ############
+image:
+  pullPolicy: IfNotPresent
+  repository: registry.kestra.io/docker/kestra-ee
+  tag: v1.2
+imagePullSecrets:
+- name: regcred
+############ EE ############
+common:
+  strategy:
+    type: Recreate
+  affinity: {}
+  annotations: {}
+  extraConfigMapEnvFrom: null
+  extraContainers: []
+  extraEnv: []
+  extraManifests: []
+  extraPorts: []
+  extraSecretEnvFrom: null
+  extraVolumeMounts: []
+  extraVolumes: []
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 0
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 0
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  startupProbe:
+    failureThreshold: 120
+    initialDelaySeconds: 1
+    periodSeconds: 1
+    successThreshold: 1
+    timeoutSeconds: 1
+  terminationGracePeriodSeconds: 30
+  nodeSelector: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  resources: {}
+  securityContext:
+    runAsGroup: 1000
+    runAsUser: 1000
+  tolerations: []
+configurations:
+  application:
+    datasources:
+      h2:
+        url: jdbc:h2:mem:public;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+        username: kestra
+        password: ""
+        driverClassName: org.h2.Driver
+    kestra:
+      ############ EE ############
+      ee:
+        license:
+          id: 
+          key: |-
+            Ih5OdgAAABoAAAALAAAACmV4cGlyeURhdGUAAAGfGvm0AAAAABUAAAADAAAADGth
+            Ih5OdgAAABoAAAALAAAACmV4cGlyeURhdGUAAAGfGvm0AAAAABUAAAADAAAADGth
+            Ih5OdgAAABoAAAALAAAACmV4cGlyeURhdGUAAAGfGvm0AAAAABUAAAADAAAADGth
+      encryption:
+        secret-key: XXXXXXXXXXXXXXXX
+      secret:
+        jdbc:
+          secret: XXXXXXXXXXXXXXXXXXX
+        type: jdbc
+      ############ EE ############
+      queue:
+        type: postgres
+      repository:
+        type: postgres
+      storage:
+        type: local
+        local:
+          basePath: "/app/storage"
+      server:
+        basic-auth:
+          password: XXXXXX!
+          username: admin@kestra.io
+      url: http://localhost:8080/
+workerGroups:
+  workergroupone:
+    # resources:
+    #   limits:
+    #     cpu:
+    #     memory:
+    #   requests:
+    #     cpu:
+    #     memory:
+    extraEnv:
+    - name: SECRET_WORKER_VALUE
+      value: workergroupone
+    enabled: true
+  workergrouptwo:
+    # resources:
+    #   limits:
+    #     cpu:
+    #     memory:
+    #   requests:
+    #     cpu:
+    #     memory:
+    extraEnv:
+    - name: SECRET_WORKER_VALUE
+      value : workergrouptwo
+    enabled: true
+deployments:
+  executor:
+    command: server executor
+    enabled: false
+    kind: Deployment
+    strategy:
+      type: Recreate
+  indexer:
+    command: server indexer
+    enabled: false
+    kind: Deployment
+  scheduler:
+    command: server scheduler
+    enabled: false
+    kind: Deployment
+    strategy:
+      type: Recreate
+  standalone:
+    enabled: false
+  webserver:
+    livenessProbe:
+      httpGet:
+        path: /health/liveness
+        port: management
+      failureThreshold: 3
+      initialDelaySeconds: 0
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 3
+    readinessProbe:
+      httpGet:
+        path: /health/readiness
+        port: management
+      failureThreshold: 3
+      initialDelaySeconds: 0
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 3
+    # exists
+    startupProbe:
+      httpGet:
+        path: /health
+        port: management
+      failureThreshold: 120
+      initialDelaySeconds: 1
+      periodSeconds: 1
+      successThreshold: 1
+      timeoutSeconds: 1
+    terminationGracePeriodSeconds: 30
+    affinity: {}
+    annotations: {}
+    autoscaler:
+      enabled: false
+      extra: {}
+      maxReplicas: 3
+      metrics: []
+      minReplicas: 1
+    command: server webserver
+    enabled: true
+    extraContainers: []
+    extraEnv: []
+    kind: Deployment
+    labels: {}
+    nodeSelector: {}
+    podSecurityContext: {}
+    replicaCount: 1
+    securityContext: {}
+    strategy:
+      type: Recreate
+    tolerations: []
+  worker:
+    command: server worker{{ if $.Values.deployments.worker.workerThreads }} --thread={{
+      .Values.deployments.worker.workerThreads }}{{ end }}
+    enabled: false
+    kind: Deployment
+    strategy:
+      type: Recreate
+    terminationGracePeriodSeconds: 60
+dind:
+  base:
+    args:
+    - --log-level=fatal
+    - --group=1000
+    rootless:
+      image:
+        pullPolicy: IfNotPresent
+        repository: docker
+        tag: dind-rootless
+    securityContext:
+      runAsGroup: 1000
+      runAsUser: 1000
+  enabled: false
+  extraEnv: []
+  extraVolumeMounts: []
+  mode: rootless
+  resources: {}
+  socketPath: /dind/
+  tmpPath: /tmp/
+elasticsearch:
+  enabled: false
+
+ingress:
+  annotations: null
+  className: alb
+  enabled: false
+  hosts:
+  - host: ""
+    paths:
+    - path: /
+      pathType: Prefix
+  tls: []
+kafka:
+  enabled: false
+minio:
+  enabled: false
+nameOverride: ""
+operator:
+  enabled: false
+postgresql:
+  enabled: false
